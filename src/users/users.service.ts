@@ -1,21 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    // 🔴 MASTER → WRITE
+    @InjectRepository(User, 'master')
+    private readonly masterRepo: Repository<User>,
 
+    // 🟢 SLAVE → READ
+    @InjectRepository(User, 'slave')
+    private readonly slaveRepo: Repository<User>,
+  ) {}
+
+  // ✍️ WRITE → MASTER ONLY
   create(name: string) {
-    return this.dataSource
-      .getRepository(User)
-      .save({ name });
+    return this.masterRepo.save({ name });
   }
 
+  // 👀 READ → SLAVE ONLY
   findAll() {
-    // FORCE MASTER
-    return this.dataSource.query(
-      'SELECT id, name FROM dbo.users'
-    );
+    return this.slaveRepo.find();
   }
 }

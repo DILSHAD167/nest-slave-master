@@ -5,7 +5,13 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    // 🔴 MASTER connection → WRITE
+    TypeOrmModule.forFeature([User], 'master'),
+
+    // 🟢 SLAVE connection → READ
+    TypeOrmModule.forFeature([User], 'slave'),
+  ],
   controllers: [UsersController],
   providers: [UsersService],
 })
