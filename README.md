@@ -124,3 +124,8 @@ DB_NAME=appdb
 DB_USER=app_user
 DB_PASS=App@12345
 DB_TYPE=mssql
+
+
+# add .env in dcoker-compose after port
+env_file:
+      - .env
